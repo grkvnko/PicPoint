@@ -203,8 +203,6 @@ PicPoint.prototype = {
         };
     }, false);
 
-    //window.addEventListener('resize', resizeCanvas, false);
-
     window.addEventListener('resize', initMap());
 
     setInterval(function () {
