@@ -71,8 +71,6 @@ PicPoint.prototype = {
         this.dotsCountY = parameters.picMap.length || 1;
         this.dotMargin = 3;
         this.dotsMap = [];
-        this.dotX = div(this.canvas.width - (this.dotMargin * this.dotsCountX), this.dotsCountX);
-        this.dotY = div(this.canvas.height - (this.dotMargin * this.dotsCountY), this.dotsCountY);
         this.mousePos = {x: 0, y: 0};
         this.easing = { def:0.2, fly: 0.05 };
         this.radOrbit = parameters.radOrbit || { X: 210, Y: 100, Z: 100, Access: 80 };
@@ -157,7 +155,7 @@ PicPoint.prototype = {
             for (x = 1; x <= this.dotsCountX; x++) {
                 if (this.dotsMap[y][x].space) {
                     this.canvasContext.beginPath();
-                    this.canvasContext.arc(this.dotsMap[y][x].x + 3, this.dotsMap[y][x].y, 6, 0, 360, false);
+                    this.canvasContext.arc(this.dotsMap[y][x].x + 3, this.dotsMap[y][x].y + 3, 6, 0, 360, false);
                     this.canvasContext.fillStyle = this.dotsMap[y][x].color;
                     this.canvasContext.fill();
                 }
@@ -197,13 +195,3 @@ PicPoint.prototype = {
     }
 
 };
-
-(function () {
-    picpoint = new PicPoint();
-    picpoint.init({
-        id: "placemap-container",
-        picMap: the_Map,
-        radOrbit: { X:80, Y:80, Z:120, Access:120 }
-    });
-    picpoint.run();
-})();

@@ -1,7 +1,7 @@
 <html>
 <head>
 <style>
-	#placemap-container {
+	#picpoint-container {
 		max-width: 1000px;
 		margin: 0 auto;
 	}
@@ -15,11 +15,22 @@
 </head>
 <body>
 
-<h2>picpoint</h2>
+    <h2>picpoint</h2>
 
-<div id="placemap-container"><canvas></canvas></div>
+    <div id="picpoint-container"><canvas></canvas></div>
 
-<script type="text/javascript" src="picpoint.js"></script>
+    <script type="text/javascript" src="picpoint.js"></script>
+    <script>
+        (function () {
+            picpoint = new PicPoint();
+            picpoint.init({
+                id: "picpoint-container",
+                picMap: the_Map,
+                radOrbit: { X:80, Y:80, Z:120, Access:120 }
+            });
+            picpoint.run();
+        })();
+    </script>
 
 </body>
 </html>
