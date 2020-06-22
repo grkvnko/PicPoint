@@ -64,18 +64,18 @@ function PicPoint() {}
 PicPoint.prototype = {
 
     initializePrimaryFields: function (parameters) {
-        this.id = parameters;
-        this.canvas = document.getElementById(parameters).getElementsByTagName("canvas")[0];
+        this.id = parameters.id;
+        this.canvas = document.getElementById(parameters.id).getElementsByTagName("canvas")[0];
         this.canvasContext = this.canvas.getContext("2d");
-        this.dotsCountX = 1;
-        this.dotsCountY = 1;
+        this.dotsCountX = parameters.picMap[0].length || 1;
+        this.dotsCountY = parameters.picMap.length || 1;
         this.dotMargin = 3;
         this.dotsMap = [];
         this.dotX = div(this.canvas.width - (this.dotMargin * this.dotsCountX), this.dotsCountX);
         this.dotY = div(this.canvas.height - (this.dotMargin * this.dotsCountY), this.dotsCountY);
         this.mousePos = {x: 0, y: 0};
         this.easing = { def:0.2, fly: 0.05 };
-        this.radOrbit = { X: 210, Y: 100, Z: 100, Access: 80 };
+        this.radOrbit = parameters.radOrbit || { X: 210, Y: 100, Z: 100, Access: 80 };
         this.FPS = 35;
     },
 
@@ -185,6 +185,8 @@ PicPoint.prototype = {
         this.initializePrimaryFields(parameters);
         this.resizeCanvas();
         this.mousemove();
+        this.createMap(parameters.picMap);
+        this.loadCoords();
     },
 
     run: function () {
@@ -198,13 +200,10 @@ PicPoint.prototype = {
 
 (function () {
     picpoint = new PicPoint();
-    picpoint.init("placemap-container");
-
-    picpoint.dotsCountX = the_Map[0].length;
-    picpoint.dotsCountY = the_Map.length;
-    picpoint.radAccess = 100;
-    picpoint.radOrbit = { X:80, Y:80, Z:120, Access:120 };
-    picpoint.createMap(the_Map);
-    picpoint.loadCoords();
+    picpoint.init({
+        id: "placemap-container",
+        picMap: the_Map,
+        radOrbit: { X:80, Y:80, Z:120, Access:120 }
+    });
     picpoint.run();
 })();
