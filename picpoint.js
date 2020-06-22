@@ -44,13 +44,28 @@ function div(val, by) {
     return (val - val % by) / by;
 }
 
+function PicPointDot(radOrbit) {
+    this.space = true;
+    this.x = 0;
+    this.y = 0;
+    this.cx = 0;
+    this.cy = 0;
+    this.w = 0;
+    this.h = 0;
+    this.color = '#1f1f9c';
+    this.point_orbitX = Math.floor(Math.random() * radOrbit.X) + radOrbit.Z;
+    this.point_orbitY = Math.floor(Math.random() * radOrbit.Y) + radOrbit.Z;
+    this.point_speed = Math.random() * 0.14;
+    this.point_pos_angle = Math.random() * 0.30;
+}
 
 function PicPoint() {}
 
 PicPoint.prototype = {
 
-    initializePrimaryFields: function () {
-        this.canvas = document.getElementById("placemap");
+    initializePrimaryFields: function (parameters) {
+        this.id = parameters;
+        this.canvas = document.getElementById(parameters).getElementsByTagName("canvas")[0];
         this.canvasContext = this.canvas.getContext("2d");
         this.dotsCountX = 1;
         this.dotsCountY = 1;
@@ -59,34 +74,16 @@ PicPoint.prototype = {
         this.dotX = div(this.canvas.width - (this.dotMargin * this.dotsCountX), this.dotsCountX);
         this.dotY = div(this.canvas.height - (this.dotMargin * this.dotsCountY), this.dotsCountY);
         this.mousePos = {x: 0, y: 0};
-        this.easing = 0.2;
-        this.easingFly = 0.05;
-        this.radAccess = 80;
-        this.radOrbitX = 10;
-        this.radOrbitY = 10;
+        this.easing = { def:0.2, fly: 0.05 };
+        this.radOrbit = { X: 210, Y: 100, Z: 100, Access: 80 };
         this.FPS = 35;
-    },
-
-    dot: function () {
-        this.space = true;
-        this.x = 0;
-        this.y = 0;
-        this.cx = 0;
-        this.cy = 0;
-        this.w = 0;
-        this.h = 0;
-        this.color = '#1f1f9c';
-        this.point_orbitX = Math.floor(Math.random() * (210/*this.radOrbitX*/- 55)) + 85;
-        this.point_orbitY = Math.floor(Math.random() * (210/*this.radOrbitY*/ - 55)) + 85;
-        this.point_speed = Math.random() * 0.14;
-        this.point_pos_angle = Math.random() * 0.30;
     },
 
     createMap: function (sel_map) {
         for (y = 1; y <= this.dotsCountY; y++) {
             this.dotsMap[y] = [];
             for (x = 1; x <= this.dotsCountX; x++) {
-                new_dot = new this.dot();
+                new_dot = new PicPointDot(this.radOrbit);
                 try {
                     if (sel_map[y - 1][x - 1] === 0)
                         new_dot.space = false;
@@ -128,27 +125,27 @@ PicPoint.prototype = {
                 this.dotsMap[y][x].w = this.dotX;
                 this.dotsMap[y][x].h = this.dotY;
 
-                if (Math.pow(this.dotsMap[y][x].cx - this.mousePos.x + 4 + (this.dotX / 2), 2) + Math.pow(this.dotsMap[y][x].cy - this.mousePos.y, 2) <= Math.pow(this.radAccess, 2)) {
+                if (Math.pow(this.dotsMap[y][x].cx - this.mousePos.x + 4 + (this.dotX / 2), 2) + Math.pow(this.dotsMap[y][x].cy - this.mousePos.y, 2) <= Math.pow(this.radOrbit.Access, 2)) {
 
                     this.dotsMap[y][x].point_pos_angle += this.dotsMap[y][x].point_speed;
                     K = this.dotsMap[y][x].point_pos_angle;
 
                     targetX = Math.sin(K) * this.dotsMap[y][x].point_orbitX + this.mousePos.x;
                     dx = targetX - this.dotsMap[y][x].x;
-                    this.dotsMap[y][x].x += dx * this.easingFly;
+                    this.dotsMap[y][x].x += dx * this.easing.fly;
 
                     targetY = Math.cos(K) * this.dotsMap[y][x].point_orbitY + this.mousePos.y;
                     dy = targetY - this.dotsMap[y][x].y;
-                    this.dotsMap[y][x].y += dy * this.easingFly;
+                    this.dotsMap[y][x].y += dy * this.easing.fly;
 
                 } else {
                     targetX = this.dotsMap[y][x].cx;
                     dx = targetX - this.dotsMap[y][x].x;
-                    this.dotsMap[y][x].x += dx * this.easing;
+                    this.dotsMap[y][x].x += dx * this.easing.def;
 
                     targetY = this.dotsMap[y][x].cy;
                     dy = targetY - this.dotsMap[y][x].y;
-                    this.dotsMap[y][x].y += dy * this.easing;
+                    this.dotsMap[y][x].y += dy * this.easing.def;
                 }
             }
         }
@@ -168,46 +165,46 @@ PicPoint.prototype = {
         }
     },
 
+    mousemove: function() {
+        let thisobj = this;
+        thisobj.canvas.addEventListener('mousemove', function (evt) {
+            rect = thisobj.canvas.getBoundingClientRect();
+            thisobj.mousePos = {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }, false);
+    },
+
+    resizeCanvas: function(id) {
+        this.canvas.width = document.getElementById(this.id).offsetWidth;
+        this.canvas.height = document.getElementById(this.id).offsetWidth * 0.70;
+    },
+
     init: function (parameters) {
-        this.initializePrimaryFields();
+        this.initializePrimaryFields(parameters);
+        this.resizeCanvas();
+        this.mousemove();
+    },
+
+    run: function () {
+        setInterval(
+            () => { this.update(); this.draw() },
+            1000 / this.FPS
+        );
     }
 
 };
 
 (function () {
-
     picpoint = new PicPoint();
-    picpoint.init();
+    picpoint.init("placemap-container");
 
-    resizeCanvas = function () {
-        picpoint.canvas.width = document.getElementById("placemap-container").offsetWidth;
-        picpoint.canvas.height = document.getElementById("placemap-container").offsetWidth * 0.70;
-    };
-
-    initMap = function () {
-        picpoint.dotsCountX = the_Map[0].length;
-        picpoint.dotsCountY = the_Map.length;
-        picpoint.radAccess = 100;
-        picpoint.radOrbitX = 110;
-        picpoint.radOrbitY = 110;
-        picpoint.createMap(the_Map);
-        resizeCanvas();
-        picpoint.loadCoords();
-    };
-
-    picpoint.canvas.addEventListener('mousemove', function (evt) {
-        rect = picpoint.canvas.getBoundingClientRect();
-        picpoint.mousePos = {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
-        };
-    }, false);
-
-    window.addEventListener('resize', initMap());
-
-    setInterval(function () {
-        picpoint.update();
-        picpoint.draw();
-    }, 1000 / picpoint.FPS);
-
+    picpoint.dotsCountX = the_Map[0].length;
+    picpoint.dotsCountY = the_Map.length;
+    picpoint.radAccess = 100;
+    picpoint.radOrbit = { X:80, Y:80, Z:120, Access:120 };
+    picpoint.createMap(the_Map);
+    picpoint.loadCoords();
+    picpoint.run();
 })();
