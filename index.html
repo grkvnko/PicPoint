@@ -1,34 +1,42 @@
 <html>
 <head>
 <style>
-	#picpoint-container {
+	#picpoint {
 		max-width: 1000px;
 		margin: 0 auto;
 	}
+    .original-image {
+        border: 1px solid #ededed;
+        margin: 20px auto 50px auto;
+        padding: 10px;
+        display: block;
+    }
 	h2 {
 		text-align: center;
 		font: 32px Arial;
-		margin-bottom: 100px;
+		margin: 50px 0 100px 0;
 		display: block;
 	}
 </style>
 </head>
 <body>
 
-    <h2>picpoint</h2>
+    <h2>PicPoint.js</h2>
 
-    <div id="picpoint-container"><canvas></canvas></div>
+    <img src="image.png" class="original-image">
+
+    <div id="picpoint">
+        <img src="image.png">
+    </div>
 
     <script type="text/javascript" src="picpoint.js"></script>
     <script>
         (function () {
-            picpoint = new PicPoint();
-            picpoint.init({
-                id: "picpoint-container",
-                picMap: the_Map,
+            picpoint = new PicPoint({
+                id: "picpoint",
+                dotSize: 4,
                 radOrbit: { X:80, Y:80, Z:120, Access:120 }
             });
-            picpoint.run();
         })();
     </script>
 
