@@ -1,5 +1,5 @@
 # PicPoint.js
-A simple JavaScript library for creating points flying in orbit from a picture.
+A simple JavaScript library for creating points, that flying in orbit about mouse, from a picture.
 
 Usage:
 ```html
